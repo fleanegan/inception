@@ -1,0 +1,66 @@
+version: '3'
+
+services:
+  server:
+    container_name: "inception_nginx"
+    image: "inception_nginx:0.1"
+    init: true
+    restart: unless-stopped
+    build: ./requirements/nginx/
+    depends_on:
+      - wordpress
+    volumes:
+      - frontend_vol:/www
+    networks:
+      - frontend_net
+    ports:
+      - "127.0.0.1:443:443"
+  database:
+    container_name: "inception_mariadb"
+    image: "inception_mariadb:0.1"
+    init: true
+    restart: unless-stopped
+    build: ./requirements/mariadb/
+    volumes:
+      - backend_vol:/var/lib/mysql
+    networks:
+      - backend_net
+    env_file: ./.env
+    ports:
+      #- "127.0.0.1:3306:3306"
+      - "3306"
+  wordpress:
+    container_name: "inception_wordpress"
+    image: "inception_wordpress:0.1"
+    init: true
+    restart: unless-stopped
+    build: ./requirements/wordpress/
+    depends_on:
+      - database
+    volumes:
+      - backend_vol:/var/lib/mysql
+      - frontend_vol:/www
+    networks:
+      - backend_net
+      - frontend_net
+    env_file: ./.env
+    ports:
+      - "9000"
+
+volumes:
+  frontend_vol:
+    driver_opts:
+      type: none
+      device: /home/fschlute/data/frontend
+      o: bind
+  backend_vol:
+    driver_opts:
+      type: none
+      device: /home/fschlute/data/backend
+      o: bind
+
+networks:
+  frontend_net:
+    #driver: bridge
+  backend_net:
+    #driver: bridge

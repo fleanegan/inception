@@ -1,0 +1,51 @@
+Project architecture
+====================
+1. ONE file called compose.yml:
+	- contains project overview
+	- specifies which images are used
+	- describe used volumes
+		-> specify here which ones are shared
+		-> specify here how the mapping is done
+	- WORKDIR: specify working directory
+2. ZERO OR MORE files called Dockerfiles:
+	- pull a base image 
+	- install requirements
+	- specify entry point
+		- CMD
+		- ENTRY
+		-> wtf, difference?!
+	- expose ports (CAN THIS BE DONE IN compose.yml AS WELL??)
+
+
+
+Volumes
+=======
+- creating a volume
+	docker volume create <name>
+	-> this is not necessary, since docker-compose creates automatically nonexisting volumes
+
+- list volumes
+	docker volume ls
+
+- inspect
+	docker volume inspect <name>
+
+- using volumes in docker-compose:
+	- everything related to creation, linking and mounting is specified in compose.yml
+	- volume section sets them up,
+	- specify mount for every container in the service section
+
+Networks
+========
+- default: all networks are connected by bridge
+- can specify custom networks. This excludes not specifically added containers from communication
+
+
+compose.yml
+===========
+
+- service:
+	name:
+		init: // if true, start docker init before entry point -> signals handled, cleanup better
+		environment OR env_file to load environment variables
+
